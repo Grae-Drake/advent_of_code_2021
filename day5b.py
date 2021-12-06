@@ -11,31 +11,23 @@ def get_data(data_path):
         return result
 
 
-def orientation(line):
-    if line[0][0] == line[1][0]:
-        return 'vertical'
-    elif line[0][1] == line[1][1]:
-        return 'horizontal'
-    else:
-        return 'diagonal'
+def step_direction(a, b):
+    diff = b - a
+    return 1 if diff > 0 else -1 if diff < 0 else 0
+
+
+def coordinate_range(start, stop, step, length):
+    return [start + step * x for x in range(length)]
 
 
 def get_line_points(line):
-    if orientation(line) == 'vertical':
-        i = line[0][0]
-        j_s = [line[0][1], line[1][1]]
-        return [(i, j) for j in range(min(j_s), max(j_s) + 1)]
-    elif orientation(line) == 'horizontal':
-        j = line[0][1]
-        i_s = [line[0][0], line[1][0]]
-        return [(i, j) for i in range(min(i_s), max(i_s) + 1)]
-    elif orientation(line) == 'diagonal':
-        i_step = 1 if line[0][0] < line[1][0] else -1
-        j_step = 1 if line[0][1] < line[1][1] else -1
-        i_range = range(line[0][0], line[1][0] + i_step, i_step)
-        j_range = range(line[0][1], line[1][1] + j_step, j_step)
-        return [(x) for x in zip(i_range, j_range)]
-
+    length = max(abs(line[0][0] - line[1][0]), abs(line[0][1] - line[1][1])) + 1
+    i_step = step_direction(line[0][0], line[1][0])
+    j_step = step_direction(line[0][1], line[1][1])
+    i_range = coordinate_range(line[0][0], line[1][0], i_step, length)
+    j_range = coordinate_range(line[0][1], line[1][1], j_step, length)
+    return [(x) for x in zip(i_range, j_range)]
+    
 
 def main(data_path):
     lines = get_data(data_path)
@@ -55,4 +47,3 @@ if __name__ == '__main__':
     day = 5
     data_path = 'data/day' + str(day) + ('_test' if args.test else '') + '.txt'
     print(main(data_path))
-
