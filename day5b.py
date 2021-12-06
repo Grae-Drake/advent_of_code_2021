@@ -11,21 +11,15 @@ def get_data(data_path):
         return result
 
 
-def step_direction(a, b):
-    diff = b - a
-    return 1 if diff > 0 else -1 if diff < 0 else 0
-
-
-def coordinate_range(start, stop, step, length):
+def coordinate_range(start, stop, length):
+    step = 1 if stop - start > 0 else -1 if stop - start < 0 else 0
     return [start + step * x for x in range(length)]
 
 
 def get_line_points(line):
     length = max(abs(line[0][0] - line[1][0]), abs(line[0][1] - line[1][1])) + 1
-    i_step = step_direction(line[0][0], line[1][0])
-    j_step = step_direction(line[0][1], line[1][1])
-    i_range = coordinate_range(line[0][0], line[1][0], i_step, length)
-    j_range = coordinate_range(line[0][1], line[1][1], j_step, length)
+    i_range = coordinate_range(line[0][0], line[1][0], length)
+    j_range = coordinate_range(line[0][1], line[1][1], length)
     return [(x) for x in zip(i_range, j_range)]
     
 
