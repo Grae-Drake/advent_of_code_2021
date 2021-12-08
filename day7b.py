@@ -13,7 +13,6 @@ def triangle(n):
 
 def main(data_path):
     data = get_data(data_path)
-    mean = round(statistics.mean(data))
     distances = []
     for x in data:
         distances.append(sum([triangle(abs(y - x)) for y in data]))
