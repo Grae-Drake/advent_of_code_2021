@@ -15,72 +15,60 @@ def get_data(data_path):
 
 def main(data_path):
     patterns, outputs = get_data(data_path)
+    result = 0
 
-    digit_segments = [
-        'abcefg',
-        'cf',
-        'acdeg',
-        'acdfg',
-        'bcdf',
-        'abdfg',
-        'abdefg',
-        'acf',
-        'abcdefg',
-        'abcdfg'
-    ]
-
-    # Iterate over each pattern
+    # Iterate over each pattern.
     for i, pattern in enumerate(patterns):
         
-        # Initialize containers
-        real = {}
+        # Initialize containers.
+        real = [None for x in range(10)]
+        e = None
         two_three_five = []
         zero_six_nine = []
         
-        # Initial easy pattern assignment
+        # Initial easy pattern assignment.
         for scrambled in pattern.split(' '):
             if len(scrambled) == 2:
-                one = scrambled
+                real[1] = set(scrambled)
             elif len(scrambled) == 4:
-                four = scrambled
+                real[4] = set(scrambled)
             elif len(scrambled) == 3:
-                seven = scrambled
+                real[7] = set(scrambled)
             elif len(scrambled) == 7:
-                eight = scrambled
+                real[8] = set(scrambled)
             elif len(scrambled) == 5:
                 two_three_five.append(scrambled)
             else:
                 zero_six_nine.append(scrambled)
         
-        # Start deducing
-        # We can figure out 9 because it wholly overlaps 4.
-        # We can diff 9 against 8 to map e.
         for scrambled in zero_six_nine:
-            if len(set(four).intersection(scrambled)) == 4:
-                nine = scrambled
-                for x in eight:
-                    if x not in nine:
-                        real['e'] = x
+            if len(set(real[4]).intersection(scrambled)) == 4:
+                real[9] = set(scrambled)
+                for x in real[8]:
+                    if x not in real[9]:
+                        e = x
                 zero_six_nine.remove(scrambled)
-        
-        # Knowing e, we can deduce 2, 3, and 5.
+
         for scrambled in two_three_five:
-            if real['e'] in scrambled:
-                two = scrambled
+            if e in scrambled:
+                real[2] = set(scrambled)
                 two_three_five.remove(scrambled)
         for scrambled in two_three_five:
-            if len(set(two).intersection(scrambled)) == 3:
-                five = scrambled
+            if len(set(real[2]).intersection(scrambled)) == 3:
+                real[5] = set(scrambled)
             else:
-                three = scrambled
+                real[3] = set(scrambled)
+        
         for scrambled in zero_six_nine:
-            # need six and zero. Six has 1 overlap with one, zero has 2.
-            if len(set(one).intersection(scrambled)) == 2:
-                zero = scrambled
+            if len(set(real[1]).intersection(scrambled)) == 2:
+                real[0] = set(scrambled)
             else:
-                six = scrambled
+                real[6] = set(scrambled)
 
-            
+        unscrambled = [str(real.index(set(digit))) for digit in outputs[i].split(' ')]
+        result += int(''.join(unscrambled))
+    return result
+
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Day 8')
