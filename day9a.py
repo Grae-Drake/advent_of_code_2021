@@ -33,7 +33,7 @@ def main(data_path):
             if is_low(matrix, i, j):
                 low_points.append(n)
 
-    print(low_points)
+    print(len(low_points))
     return len(low_points) + sum(low_points)
             
     

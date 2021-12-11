@@ -1,4 +1,5 @@
 import argparse
+from os import defpath
 
 
 def get_data(data_path):
@@ -19,46 +20,53 @@ def in_bounds(matrix, i, j):
 
 def is_low(matrix, i, j):
     adjacent = []
-    for x in [(0, -1), (0, 1), (-1, 0), (1, 0)]:
-        new_i = i + x[0]
-        new_j = j + x[1]
-        if in_bounds(matrix, new_i, new_j):
-            adjacent.append(matrix[new_i][new_j])
-    return all([True if (matrix[i][j] < x) else False for x in adjacent])
+    for i_offset, j_offset in [(0, -1), (0, 1), (-1, 0), (1, 0)]:
+        if in_bounds(matrix, i + i_offset, j + j_offset):
+            adjacent.append(matrix[i + i_offset][j + j_offset])
+    
+    for point in adjacent:
+        if point['depth'] <= matrix[i][j]['depth']:
+            return False
+    return True
 
 
-def basin(matrix, i, j):
-    count = 1
-    for x in [(0, -1), (0, 1), (-1, 0), (1, 0)]:
-        new_i = i + x[0]
-        new_j = j + x[1]
+def basin_count(matrix, point):
+    result = 1
+    point['basin'] = True
+    for i_offset, j_offset in [(0, -1), (0, 1), (-1, 0), (1, 0)]:
+        new_i = point['i'] + i_offset
+        new_j = point['j'] + j_offset
         if in_bounds(matrix, new_i, new_j):
-            if matrix[new_i][new_j]['basin'] is None:
-                count += basin(matrix, new_i, new_j)
-    return count
+            if not matrix[new_i][new_j]['basin']:
+                result += basin_count(matrix, matrix[new_i][new_j])
+    return result
 
 
 def main(data_path):
     matrix = get_data(data_path)
     
-    low_points = []
+    # Refactor each point in the matrix to track its basin.
     for i, row in enumerate(matrix):
         for j, n in enumerate(row):
-            # Revise matrix for tracking basin affiliation.
             matrix[i][j] = {
-                'height': n,
-                'basin': None
-            }
-            
-            # Get a list of low points.
-            if is_low(matrix, i, j):
-                low_points.append((i, j))
+                'depth': n,
+                'basin': True if n == 9 else False,
+                'i': i,
+                'j': j}
 
-    print(low_points)
-    basins = []
-    for low_point in low_points:
-        basins.append(basin(matrix, low_point[0], low_point[1]))
-    return max(basins)
+    # Identify the low points. Each will have a basin.
+    low_points = []
+    for i, row in enumerate(matrix):
+        for j, point in enumerate(row):
+            if is_low(matrix, i, j):
+                low_points.append(point)
+
+    basin_counts = [basin_count(matrix, point) for point in low_points]
+    biggest = sorted(basin_counts)[-3:]
+    result = 1
+    for n in biggest:
+        result *= n
+    return result
             
     
 
