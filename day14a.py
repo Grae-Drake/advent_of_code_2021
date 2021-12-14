@@ -35,33 +35,6 @@ def main(data_path):
 
         return max(element_counts.values()) - min(element_counts.values())
 
-        
-
-
-
-
-
-
-
-
-        # Iterate.
-        for x in range(9):
-            new_pair_counts = defaultdict(int)
-            for pair, count in pair_counts.items():
-                daughters = rules[pair]
-                for daughter in daughters:
-                    new_pair_counts[daughter] += count
-            pair_counts = new_pair_counts
-
-        # Get individual element counts.
-        element_counts = defaultdict(int)
-        for pair, count in pair_counts.items():
-            for element in pair:
-                element_counts[element] += count
-        print(element_counts)
-
-        return max(element_counts.values()) - min(element_counts.values())
-
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Day 14')
