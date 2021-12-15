@@ -19,12 +19,27 @@ def get_parents(i, j):
 
 
 def main(data_path):
-    matrix = get_data(data_path)
+    # Load data.
+    data = get_data(data_path)
+    
+    # Initilaze empty matrix.
+    side = len(data) * 5
+    matrix = [[0 for x in range(side)] for y in range(side)]
+
+    # Populate risk levels in each matrix.
+    for i, row in enumerate(data):
+        for j, n in enumerate(row):
+            for i_tile in range(5):
+                for j_tile in range(5):
+                    i_m = i + i_tile * (side / 5)
+                    j_m = j + j_tile * (side / 5)
+                    matrix[i_m][j_m] = (n - 1 + i_tile + j_tile) % 9 + 1
     matrix[0][0] = 0
-    side = len(matrix)
+
+    # Pathfind.
     i = 0
     j = 0
-    while i < len(matrix) -1 or j < len(matrix[0]) - 1:
+    while i < side -1 or j < side - 1:
 
         # Figure out which cell to evaluate next.
         # First, check whether we've hit an edge.
@@ -41,12 +56,11 @@ def main(data_path):
             i -= 1
             j += 1
 
+        # Update each cell with the lowest cost to reach it.
         parents_coordinates = get_parents(i, j)
         parents = [matrix[x[0]][x[1]] for x in parents_coordinates]
         matrix[i][j] = matrix[i][j] + min(parents)
     
-    for row in matrix:
-        print(row)
     return matrix[side - 1][side - 1]
 
 
