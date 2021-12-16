@@ -8,7 +8,6 @@ def get_data(data_path):
             result.append([int(x) for x in line.rstrip()])
         return result
 
-
 def get_parents(i, j):
     result = []
     if i > 0:
@@ -16,7 +15,6 @@ def get_parents(i, j):
     if j > 0:
         result.append([i, j - 1])
     return result
-
 
 def main(data_path):
     matrix = get_data(data_path)
@@ -41,12 +39,11 @@ def main(data_path):
             i -= 1
             j += 1
 
+        
         parents_coordinates = get_parents(i, j)
         parents = [matrix[x[0]][x[1]] for x in parents_coordinates]
         matrix[i][j] = matrix[i][j] + min(parents)
     
-    for row in matrix:
-        print(row)
     return matrix[side - 1][side - 1]
 
 
