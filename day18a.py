@@ -26,6 +26,43 @@ class Graph():
         self.reduced = reduced
 
 
+def parse_data(string, depth=0):
+    string = string[1:-1]
+
+    # Case where the left child (and maybe right child) is a bare number.
+    if string[0] != '[':
+        child_strings = string.split(',', 1)
+
+    # Case where the right child (but not left child) is a bare number.
+    elif string[-1] != ']':
+        child_strings = string.rsplit(',', 1)
+
+    # Case where both children are pairs.
+    else:
+        stack = [string[0]]
+        i = 0
+        while len(stack) > 0:
+            i += 1
+            char = string[i]
+            if char == '[':
+                stack.append(char)
+            elif char == ']':
+                stack.pop()
+        child_strings = [string[:i + 1], string[i + 2:]]
+    
+    node = Node(None, None, None, None, None, depth, None)
+    for child_string in child_strings:
+        try:
+            child_val = int(child_string)
+            child = Node(child_val, None, None, node, depth + 1, None)
+            
+        except ValueError:
+            child = parse_data(child_string, depth=depth + 1)
+
+    return Node(None, children, None, None, None, depth)
+    
+
+
 def bury(node):
     '''Recursively increment the depth for each node in a subgraph.'''
     node.depth += 1
